@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANEL DLL SHOP WED - Compra de Paneles</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Modo oscuro (predeterminado) */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --accent-color: #25D366;
+            --accent-secondary: #7289DA;
+            --header-bg: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+            --border-color: #444444;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .light-mode {
+            /* Modo claro */
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --accent-color: #25D366;
+            --accent-secondary: #7289DA;
+            --header-bg: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+            --border-color: #dddddd;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Botón modo oscuro/claro */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        .theme-toggle i {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #FFD700, #FFA500);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .shop-name {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px var(--shadow-color);
+        }
+        
+        .product-header {
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .panel-supreme .product-header {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+        }
+        
+        .panel-basico .product-header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+        }
+        
+        .panel-silent .product-header {
+            background: linear-gradient(to right, #56ab2f, #a8e063);
+        }
+        
+        .panel-android .product-header {
+            background: linear-gradient(to right, #8e2de2, #4a00e0);
+        }
+        
+        .product-title {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .pricing-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .price-tag {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .price-tag.highlight {
+            background: #FFD700;
+            color: #000;
+            transform: scale(1.05);
+        }
+        
+        .product-features {
+            padding: 25px 20px;
+        }
+        
+        .product-features ul {
+            list-style-type: none;
+        }
+        
+        .product-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+        
+        .product-features li i {
+            color: var(--accent-color);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .message-generator {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px var(--shadow-color);
+            margin-bottom: 40px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .emoji-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .emoji-btn {
+            font-size: 1.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .emoji-btn:hover {
+            background: var(--accent-color);
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            text-align: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(37, 211, 102, 0.2);
+        }
+        
+        .btn:hover {
+            background: #1da851;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 211, 102, 0.3);
+        }
+        
+        .btn-discord {
+            background: var(--accent-secondary);
+        }
+        
+        .btn-discord:hover {
+            background: #5a6fc2;
+        }
+        
+        .btn-generate {
+            background: #207cca;
+        }
+        
+        .btn-generate:hover {
+            background: #1a68b4;
+        }
+        
+        .link-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .generated-link {
+            word-break: break-all;
+            font-size: 1rem;
+            padding: 15px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            border: 1px dashed var(--accent-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .link-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .whatsapp-info {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .phone-number {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 10px 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .social-links {
+            margin-top: 20px;
+        }
+        
+        .social-icon {
+            display: inline-block;
+            margin: 0 10px;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            transition: color 0.3s, transform 0.3s;
+        }
+        
+        .social-icon:hover {
+            color: var(--accent-secondary);
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .products {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .shop-name {
+                font-size: 2.2rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+        
+        /* Estilo para los checkboxes */
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-sun"></i>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="shop-name">PANEL DLL SHOP WED</div>
+            <h1>Compra de Paneles de Alta Calidad</h1>
+            <p class="subtitle">Selecciona el panel que necesitas y genera tu pedido por WhatsApp fácilmente</p>
+        </header>
+        
+        <section class="products">
+            <div class="product-card panel-supreme">
+                <div class="product-header">
+                    <h2 class="product-title">PANEL SUPREME</h2>
+                    <p>Alta eficiencia y durabilidad</p>
+                    <div class="pricing-options">
+                        <div class="price-tag highlight">Semanal: 5 USD</div>
+                        <div class="price-tag">Mensual: 15 USD</div>
+                        <div class="price-tag">Quincenal: 8 USD</div>
+                    </div>
+                </div>
+                <div class="product-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Eficiencia del 22%</li>
+                        <li><i class="fas fa-check-circle"></i> Garantía de 25 años</li>
+                        <li><i class="fas fa-check-circle"></i> Resistente a condiciones extremas</li>
+                        <li><i class="fas fa-check-circle"></i> Incluye monitor de rendimiento</li>
+                        <li><i class="fas fa-check-circle"></i> Instalación profesional incluida</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="product-card panel-basico">
+                <div class="product-header">
+                    <h2 class="product-title">PANEL BÁSICO</h2>
+                    <p>Soluciones económicas y confiables</p>
+                    <div class="pricing-options">
+                        <div class="price-tag highlight">Semanal: 5 USD</div>
+                        <div class="price-tag">Mensual: 15 USD</div>
+                        <div class="price-tag">Quincenal: 8 USD</div>
+                    </div>
+                </div>
+                <div class="product-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Eficiencia del 18%</li>
+                        <li><i class="fas fa-check-circle"></i> Garantía de 15 años</li>
+                        <li><i class="fas fa-check-circle"></i> Fácil instalación</li>
+                        <li><i class="fas fa-check-circle"></i> Ideal para uso residencial</li>
+                        <li><i class="fas fa-check-circle"></i> Bajo mantenimiento</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="product-card panel-silent">
+                <div class="product-header">
+                    <h2 class="product-title">AIM SILENT</h2>
+                    <p>Tecnología silenciosa avanzada</p>
+                    <div class="pricing-options">
+                        <div class="price-tag highlight">Semanal: 5 USD</div>
+                        <div class="price-tag">Mensual: 15 USD</div>
+                        <div class="price-tag">Quincenal: 8 USD</div>
+                    </div>
+                </div>
+                <div class="product-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Operación completamente silenciosa</li>
+                        <li><i class="fas fa-check-circle"></i> Eficiencia del 20%</li>
+                        <li><i class="fas fa-check-circle"></i> Diseño compacto</li>
+                        <li><i class="fas fa-check-circle"></i> Ideal para zonas urbanas</li>
+                        <li><i class="fas fa-check-circle"></i> Garantía de 20 años</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="product-card panel-android">
+                <div class="product-header">
+                    <h2 class="product-title">PANEL ANDROID</h2>
+                    <p>Conexión inteligente y control app</p>
+                    <div class="pricing-options">
+                        <div class="price-tag highlight">Semanal: 5 USD</div>
+                        <div class="price-tag">Mensual: 15 USD</div>
+                        <div class="price-tag">Quincenal: 8 USD</div>
+                    </div>
+                </div>
+                <div class="product-features">
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Control por aplicación Android/iOS</li>
+                        <li><i class="fas fa-check-circle"></i> Monitoreo en tiempo real</li>
+                        <li><i class="fas fa-check-circle"></i> Integración con asistentes de voz</li>
+                        <li><i class="fas fa-check-circle"></i> Eficiencia del 23%</li>
+                        <li><i class="fas fa-check-circle"></i> Garantía de 30 años</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="message-generator">
+            <h2 class="section-title">Genera tu Mensaje de Pedido</h2>
+            <p>Completa el formulario para crear un enlace personalizado de WhatsApp con tu pedido.</p>
+            
+            <div class="form-group">
+                <label for="country">Código de país *</label>
+                <select id="country">
+                    <option value="57">Colombia (+57)</option>
+                    <option value="52">México (+52)</option>
+                    <option value="1">Estados Unidos/Canadá (+1)</option>
+                    <option value="34">España (+34)</option>
+                    <option value="51">Perú (+51)</option>
+                    <option value="54">Argentina (+54)</option>
+                    <option value="56">Chile (+56)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Tu nombre *</label>
+                <input type="text" id="name" placeholder="Ej: Carlos López">
+            </div>
+            
+            <div class="form-group">
+                <label for="product">Selecciona el producto *</label>
+                <select id="product">
+                    <option value="">-- Selecciona un panel --</option>
+                    <option value="PANEL SUPREME">PANEL SUPREME - Semanal: 5 USD / Mensual: 15 USD / Quincenal: 8 USD</option>
+                    <option value="PANEL BÁSICO">PANEL BÁSICO - Semanal: 5 USD / Mensual: 15 USD / Quincenal: 8 USD</option>
+                    <option value="AIM SILENT">AIM SILENT - Semanal: 5 USD / Mensual: 15 USD / Quincenal: 8 USD</option>
+                    <option value="PANEL ANDROID">PANEL ANDROID - Semanal: 5 USD / Mensual: 15 USD / Quincenal: 8 USD</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Selecciona el plan de pago</label>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="weekly" name="paymentPlan" value="Semanal - 5 USD" checked>
+                    <label for="weekly">Semanal - 5 USD</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="monthly" name="paymentPlan" value="Mensual - 15 USD">
+                    <label for="monthly">Mensual - 15 USD</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="biweekly" name="paymentPlan" value="Quincenal - 8 USD">
+                    <label for="biweekly">Quincenal - 8 USD</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Saludo inicial (opcional)</label>
+                <div class="emoji-selector">
+                    <button type="button" class="emoji-btn" data-emoji="👋">👋</button>
+                    <button type="button" class="emoji-btn" data-emoji="😊">😊</button>
+                    <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
+                    <button type="button" class="emoji-btn" data-emoji="🙌">🙌</button>
+                    <button type="button" class="emoji-btn" data-emoji="💪">💪</button>
+                    <button type="button" class="emoji-btn" data-emoji="⭐">⭐</button>
+                    <button type="button" class="emoji-btn" data-emoji="🔋">🔋</button>
+                    <button type="button" class="emoji-btn" data-emoji="☀️">☀️</button>
+                </div>
+                <input type="text" id="greeting" placeholder="Ej: ¡Hola! Quiero hacer un pedido">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Mensaje personalizado *</label>
+                <textarea id="message" placeholder="Escribe aquí los detalles de tu pedido, preguntas o comentarios adicionales..."></textarea>
+            </div>
+            
+            <button class="btn btn-generate" id="generateBtn">
+                <i class="fab fa-whatsapp"></i> Generar Enlace de WhatsApp
+            </button>
+            
+            <div id="linkResult" class="link-container" style="display: none;">
+                <h3>Tu enlace de WhatsApp está listo:</h3>
+                <div class="generated-link" id="whatsappLink"></div>
+                
+                <p>Haz clic en el botón para abrir WhatsApp con tu mensaje:</p>
+                <div class="link-actions">
+                    <a href="#" class="btn" id="openWhatsAppBtn" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+                    </a>
+                    <button class="btn" id="copyLinkBtn">
+                        <i class="fas fa-copy"></i> Copiar Enlace
+                    </button>
+                </div>
+            </div>
+            
+            <div class="whatsapp-info">
+                <h3>Información de Contacto</h3>
+                <p>También puedes contactarnos directamente:</p>
+                <div class="phone-number">+57 324 8990589</div>
+                <p>O usar estos enlaces rápidos:</p>
+                <a href="https://wa.link/39oym5" class="btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Enlace Directo 1
+                </a>
+                <a href="https://crear.wa.link/" class="btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Crear en wa.link
+                </a>
+            </div>
+        </section>
+        
+        <section class="message-generator">
+            <h2 class="section-title">Únete a Nuestra Comunidad en Discord</h2>
+            <p>Conéctate con otros clientes, recibe soporte técnico y mantente informado sobre nuevos productos.</p>
+            
+            <a href="https://discord.gg/DvbfsMTrFk" class="btn btn-discord" target="_blank">
+                <i class="fab fa-discord"></i> Unirse al Servidor de Discord
+            </a>
+            
+            <p style="margin-top: 20px;">Enlace: <strong>https://discord.gg/DvbfsMTrFk</strong></p>
+        </section>
+        
+        <footer>
+            <p>PANEL DLL SHOP WED &copy; 2023 - Todos los derechos reservados</p>
+            <p>Venta de paneles solares de alta calidad con envío a todo el país</p>
+            
+            <div class="social-links">
+                <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://discord.gg/DvbfsMTrFk" class="social-icon" target="_blank"><i class="fab fa-discord"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar modo oscuro como predeterminado
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+            
+            // Controlar el interruptor de modo oscuro/claro
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            themeToggle.addEventListener('click', function() {
+                if (document.body.classList.contains('dark-mode')) {
+                    // Cambiar a modo claro
+                    document.body.classList.remove('dark-mode');
+                    document.body.classList.add('light-mode');
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                } else {
+                    // Cambiar a modo oscuro
+                    document.body.classList.remove('light-mode');
+                    document.body.classList.add('dark-mode');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+                
+                // Guardar preferencia en localStorage
+                const currentMode = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+                localStorage.setItem('themeMode', currentMode);
+            });
+            
+            // Cargar preferencia guardada
+            const savedMode = localStorage.getItem('themeMode');
+            if (savedMode === 'light') {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+            
+            // Agregar emojis al campo de saludo
+            const emojiButtons = document.querySelectorAll('.emoji-btn');
+            const greetingInput = document.getElementById('greeting');
+            
+            emojiButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const emoji = this.getAttribute('data-emoji');
+                    greetingInput.value += emoji;
+                });
+            });
+            
+            // Manejar checkboxes de plan de pago (solo uno seleccionado)
+            const paymentCheckboxes = document.querySelectorAll('input[name="paymentPlan"]');
+            paymentCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Desmarcar los otros
+                        paymentCheckboxes.forEach(otherCheckbox => {
+                            if (otherCheckbox !== this) {
+                                otherCheckbox.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Generar enlace de WhatsApp
+            const generateBtn = document.getElementById('generateBtn');
+            const linkResult = document.getElementById('linkResult');
+            const whatsappLink = document.getElementById('whatsappLink');
+            const openWhatsAppBtn = document.getElementById('openWhatsAppBtn');
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            
+            generateBtn.addEventListener('click', function() {
+                // Obtener valores del formulario
+                const name = document.getElementById('name').value.trim();
+                const product = document.getElementById('product').value;
+                const greeting = document.getElementById('greeting').value.trim();
+                const message = document.getElementById('message').value.trim();
+                
+                // Obtener plan de pago seleccionado
+                let selectedPlan = '';
+                paymentCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedPlan = checkbox.value;
+                    }
+                });
+                
+                // Validar campos requeridos
+                if (!name || !product || !message) {
+                    alert('Por favor, completa todos los campos requeridos: Nombre, Producto y Mensaje.');
+                    return;
+                }
+                
+                // Construir el mensaje completo
+                let fullMessage = '';
+                
+                if (greeting) {
+                    fullMessage += greeting + '%0A%0A';
+                } else {
+                    fullMessage += '¡Hola! Quiero hacer un pedido.%0A%0A';
+                }
+                
+                fullMessage += `Mi nombre es: ${name}%0A`;
+                fullMessage += `Producto de interés: ${product}%0A`;
+                
+                if (selectedPlan) {
+                    fullMessage += `Plan de pago seleccionado: ${selectedPlan}%0A`;
+                }
+                
+                fullMessage += `%0AMensaje:%0A${message}%0A%0A`;
+                fullMessage += '---%0A';
+                fullMessage += 'Mensaje generado desde PANEL DLL SHOP WED';
+                
+                // Codificar el mensaje para URL
+                const encodedMessage = encodeURIComponent(fullMessage).replace(/'/g, "%27").replace(/"/g, "%22");
+                
+                // Crear el enlace de WhatsApp
+                const phoneNumber = "573248990589"; // Tu número sin el +
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                
+                // Mostrar el enlace
+                whatsappLink.textContent = whatsappUrl;
+                openWhatsAppBtn.href = whatsappUrl;
+                
+                // Mostrar el contenedor de resultados
+                linkResult.style.display = 'block';
+                
+                // Desplazarse al resultado
+                linkResult.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Copiar enlace al portapapeles
+            copyLinkBtn.addEventListener('click', function() {
+                const linkText = whatsappLink.textContent;
+                
+                navigator.clipboard.writeText(linkText).then(function() {
+                    // Cambiar texto del botón temporalmente
+                    const originalText = copyLinkBtn.innerHTML;
+                    copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+                    copyLinkBtn.style.background = '#4CAF50';
+                    
+                    setTimeout(function() {
+                        copyLinkBtn.innerHTML = originalText;
+                        copyLinkBtn.style.background = '';
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Error al copiar: ', err);
+                    alert('No se pudo copiar el enlace. Por favor, cópialo manualmente.');
+                });
+            });
+            
+            // Sugerencias de mensaje automático
+            const messageTextarea = document.getElementById('message');
+            const productSelect = document.getElementById('product');
+            
+            productSelect.addEventListener('change', function() {
+                if (messageTextarea.value.trim() === '') {
+                    const productName = this.options[this.selectedIndex].text;
+                    
+                    let suggestedMessage = `Me interesa el ${productName}. `;
+                    suggestedMessage += `Quiero información sobre los planes de pago (semanal, mensual, quincenal). `;
+                    suggestedMessage += `Por favor, envíenme más detalles sobre disponibilidad y formas de pago.`;
+                    
+                    messageTextarea.value = suggestedMessage;
+                }
+            });
+            
+            // Rellenar un ejemplo automáticamente al cargar la página
+            setTimeout(function() {
+                if (document.getElementById('name').value === '') {
+                    document.getElementById('name').value = 'Carlos López';
+                    document.getElementById('greeting').value = '¡Hola! 👋 Quiero hacer un pedido';
+                    document.getElementById('product').value = 'PANEL SUPREME';
+                    document.getElementById('weekly').checked = true;
+                    document.getElementById('message').value = 'Me interesa el PANEL SUPREME con el plan semanal de 5 USD. Por favor, envíenme más información sobre disponibilidad y formas de pago. También me gustaría saber el tiempo de entrega y si incluye instalación.';
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
